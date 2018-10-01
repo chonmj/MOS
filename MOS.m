@@ -67,10 +67,26 @@ set(handles.uipanel_graph,'Parent',handles.tab_graphs);
 set(handles.uipanel_feed,'position',get(handles.uipanel_parent,'position'));
 set(handles.uipanel_graph,'position',get(handles.uipanel_parent,'position'));
 
-menu_legal_Callback(handles.menu_legal, eventdata, handles);
+%% legal disclaimer popup
+% load disclaimer text file
+try 
+    disclaimer=importdata('Disclaimer.txt');
+    h=msgbox(disclaimer,'Legal Information');
+    waitfor(h);
+catch
+    % display this hardcoded message if disclaimer file is not found.
+    h = msgbox({'Copyright 2016, Brown University, Providence, RI.',
+'All Rights Reserved',
+'',
+'Permission to use this software must be obtained from Brown University. It may not be distributed or incorporated into a commercial product. The name of Brown University cannot be used in advertising or publicity pertaining to the software without specific, written prior permission.'  
+'',
+'BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.'},...
+'Legal Information'); 
+waitfor(h);
+end
 
-% Camera set-up
-% camera_obj = videoinput('pointgrey',1,'F7_Mono8_1928x1448_Mode0');
+%% Camera set-up
+load('camerainfo.mat');
 camera_obj =videoinput('pointgrey', 1, 'F7_Mono12_2048x1536_Mode0');
 camera_src = getselectedsource(camera_obj);
 camera_src_info = propinfo(camera_src); 
@@ -85,7 +101,7 @@ global camera_gain;
 global threshold; 
 global camera_shutter; 
  
-if(exist('mos_session_data.mat')==1) 
+if exist('mos_session_data.mat')==2 
      load('mos_session_data.mat')
      handles.save_directory = directory; 
      handles.save_filename = filename; 
@@ -95,7 +111,7 @@ if(exist('mos_session_data.mat')==1)
      camera_shutter = save_shutter; 
 else
     defaultfolder = userpath; 
-    defaultfolder = defaultfolder(1:end-1);
+%     defaultfolder = defaultfolder(1:end-1);
     handles.save_directory = defaultfolder;
     handles.save_filename = 'data_1'; 
     camera_gain = camera_src_info.Gain.ConstraintValue(2)/2; 
@@ -181,20 +197,6 @@ function menu_about_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_about (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-
-% --------------------------------------------------------------------
-function menu_legal_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_legal (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h = msgbox({'Copyright 2016, Brown University, Providence, RI.',
-'All Rights Reserved',
-'',
-'Permission to use this software must be obtained from Brown University.  It may not be distributed or incorporated into a commercial product. The name of Brown University cannot be used in advertising or publicity pertaining to the software without specific, written prior permission.'  
-'',
-'BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.'},'Legal Information'); 
-waitfor(h);
 
 % --------------------------------------------------------------------
 function menu_docs_Callback(hObject, eventdata, handles)
