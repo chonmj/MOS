@@ -55,7 +55,7 @@ function MOSS_calibration_OpeningFcn(hObject, eventdata, handles, varargin)
 % Setting up video feed
 axes(handles.axes_camera_cal); 
 % camera_obj = videoinput('pointgrey',1,'F7_Mono8_1928x1448_Mode0');
-camera_obj =videoinput('pointgrey', 1, 'F7_Mono12_2048x1536_Mode0');
+camera_obj =videoinput('pointgrey', 1, 'F7_Mono16_2048x1536_Mode0');
 camera_src = getselectedsource(camera_obj);
 camera_src_info = propinfo(camera_src);
 
