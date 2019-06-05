@@ -74,16 +74,21 @@ handles.camera_gain_max = camera_src_info.Gain.ConstraintValue(2);
 handles.camera_shutter_min = camera_src_info.Shutter.ConstraintValue(1); 
 handles.camera_shutter_max = camera_src_info.Shutter.ConstraintValue(2); 
 handles.camera_shutter_range = handles.camera_shutter_max - handles.camera_shutter_min; 
-
 % Initial values
+try load('mos_session_data.mat')
+    handles.camera_src.Gain=save_gain;
+    handles.camera_src.Shutter=save_shutter;
+catch
+handles.camera_src.Gain = (handles.camera_gain_max)/2; 
+handles.camera_src.Shutter = (handles.camera_shutter_max + handles.camera_shutter_min)/2;
+
+end
 handles.camera_src.Brightness = 0; 
 handles.camera_src.GainMode = 'Manual';
-handles.camera_src.Gain = (handles.camera_gain_max)/2; 
 % handles.camera_src.ExposureMode = 'Manual';
 % handles.camera_src.Exposure = (handles.camera_exposure_max + handles.camera_exposure_min)/2; 
 % editted by ZRAO
 handles.camera_src.ShutterMode = 'Manual';
-handles.camera_src.Shutter = (handles.camera_shutter_max + handles.camera_shutter_min)/2;
 handles.camera_src.FrameRateMode = 'Manual';
 handles.camera_src.FrameRate = 60; 
 
@@ -167,13 +172,20 @@ function pushbutton_exit_calibrate_Callback(hObject, eventdata, handles)
     
     handles.stopped = 1; 
     handles.stopped;
-    stoppreview(handles.vidobj); 
+    stoppreview(handles.vidobj);
+    save_gain=handles.slider_gain.Value*handles.camera_gain_max;
+    save_threshold=handles.slider_exposure.Value*255;
+    save_shutter=handles.slider_shutter.Value*handles.camera_shutter_range+handles.camera_shutter_min;
     
-    global camera_gain;
+%     scale*handles.camera_shutter_range + handles.camera_shutter_min; 
+    
+    % save camera settings to file. edited by mchon
+    save('mos_session_data.mat','save_gain','save_threshold','save_shutter','-append')
+%     global camera_gain;
 %     global camera_exposure;
 % edited by ZRAO
 
-    global camera_shutter; 
+%     global camera_shutter; 
     camera_gain = handles.camera_src.Gain;
 %     camera_exposure = handles.camera_src.Exposure;
     camera_shutter = handles.camera_src.Shutter;

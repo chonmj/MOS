@@ -86,8 +86,13 @@ waitfor(h);
 end
 
 %% Camera set-up
-load('camerainfo.mat');
-camera_obj =videoinput('pointgrey', 1, 'F7_Mono12_2048x1536_Mode0');
+if exist('camerainfo.mat')==2
+   load('camerainfo.mat');
+   camera_obj =videoinput(adapterName{1}, deviceID, cameraFormat);
+else
+    camera_obj =videoinput('pointgrey', 1, 'F7_Mono12_2048x1536_Mode0');
+end
+
 camera_src = getselectedsource(camera_obj);
 camera_src_info = propinfo(camera_src); 
 
@@ -103,11 +108,10 @@ global camera_shutter;
  
 if exist('mos_session_data.mat')==2 
      load('mos_session_data.mat')
-     handles.save_directory = directory; 
-     handles.save_filename = filename; 
-     camera_gain = save_gain; 
+     handles.save_directory = directory; % TODO: set save directory
+     handles.save_filename = filename;   % TODO: set filename
+     camera_gain = save_gain;
      threshold = save_threshold;
-%      camera_exposure = save_exposure; 
      camera_shutter = save_shutter; 
 else
     defaultfolder = userpath; 
@@ -227,9 +231,18 @@ function menu_boxes_Callback(hObject, eventdata, handles)
     handles.num_boxes = num_boxes;
     
     global camera_shutter;
-%     global camera_exposure;
-    global threshold 
-    global camera_gain; 
+    %     global camera_exposure;
+    global threshold
+    global camera_gain;
+    
+    try  load('mos_session_data.mat');
+        camera_gain=save_gain;
+        camera_shutter=save_shutter;
+        threshold=save_threshold;
+    catch
+        
+    end
+    
     %Refresh mos settings
     handles.camera_src.Brightness = 0; 
     handles.camera_src.FrameRateMode = 'Manual';
@@ -306,7 +319,7 @@ function menu_start_Callback(hObject, eventdata, handles)
         warndlg('Invalid saving directory. Please choose directory again.','Error');
         return;
     end
-
+    
     prompt = {'Run Time (in seconds):','Delay Time (in seconds):','Subfolder:'};
     dlg_title = 'Input';
     num_lines = 1;
@@ -316,6 +329,16 @@ function menu_start_Callback(hObject, eventdata, handles)
     while (isempty(answer{3}))
         answer = inputdlg(prompt,dlg_title,num_lines,defaultans);
     end
+    
+    
+%% everything is good to go
+
+%enable stop; disable start/box size
+set(handles.menu_start,'Enable','off');
+set(handles.slider_box_size,'Enable','off');
+set(handles.menu_stop,'Enable','on');
+
+    
     handles.run_time = str2double(answer{1});
     handles.delay_time = str2double(answer{2});
     handles.save_filename = answer{3};
@@ -384,17 +407,11 @@ function menu_start_Callback(hObject, eventdata, handles)
     run_time_num = str2double(handles.run_time);
     if ~isnan(handles.run_time) && (handles.run_time > 0) 
         pause(handles.run_time);
-        uipushtool_stop_ClickedCallback(handles.uipushtool_stop, eventdata, handles)        
+        MOS('menu_stop_Callback',hObject,eventdata,guidata(hObject))
     else 
         handles.run_time = [];
     end
 
-    %enable stop; disable start/box size
-    %set(handles.uipushtool_start,'Enable','off');
-    set(handles.menu_start,'Enable','off');
-    set(handles.slider_box_size,'Enable','off');
-    %set(handles.uipushtool_stop,'Enable','on');
-    set(handles.menu_stop,'Enable','on');
 
 % --------------------------------------------------------------------
 function menu_stop_Callback(hObject, eventdata, handles)
