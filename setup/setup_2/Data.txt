@@ -1,0 +1,2 @@
+time, avg distance
+[1...n] x_centroid, y_centroid, integrated intensity, intensity_centroid

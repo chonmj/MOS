@@ -22,7 +22,7 @@ function varargout = MOS(varargin)
 
 % Edit the above text to modify the response to help MOS
 
-% Last Modified by GUIDE v2.5 19-Dec-2016 12:50:10
+% Last Modified by GUIDE v2.5 05-Jun-2019 16:46:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -88,7 +88,7 @@ end
 %% Camera set-up
 if exist('camerainfo.mat')==2
    load('camerainfo.mat');
-   camera_obj =videoinput(adapterName{1}, deviceID, cameraFormat);
+   camera_obj =videoinput(adapterName, deviceID, cameraFormat);
 else
     camera_obj =videoinput('pointgrey', 1, 'F7_Mono12_2048x1536_Mode0');
 end
@@ -218,7 +218,7 @@ function menu_boxes_Callback(hObject, eventdata, handles)
     prompt = {'Enter number of boxes (2 to 8):'};
     dlg_title = 'Input';
     num_lines = 1;
-    defaultans = {'2'};
+    defaultans = {'3'};
     answer = inputdlg(prompt,dlg_title,num_lines,defaultans);
     if isempty(answer) return; end
     num_boxes = str2num(answer{1});
@@ -462,6 +462,7 @@ function menu_save_Callback(hObject, eventdata, handles)
     save_directory = uigetdir();
     handles.save_directory = save_directory;
     guidata(hObject,handles);
+    shg
 
 % --- Executes on slider movement.
 function slider_box_size_Callback(hObject, eventdata, handles)
@@ -506,3 +507,42 @@ function menu_exit_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
     close all;
+
+
+% --------------------------------------------------------------------
+function camera_setup_Callback(hObject, eventdata, handles)
+% hObject    handle to camera_setup (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+try caminfo1=imaqhwinfo;
+    adapterName=caminfo1.InstalledAdaptors{1};
+    caminfo2=imaqhwinfo(adapterName);
+    deviceID=caminfo2.DeviceIDs{1};
+    cameraFormat=caminfo2.DeviceInfo.DefaultFormat;
+    clc
+    display(['Current Format: ' cameraFormat]);
+    Ys={'Yes','YES','Y','y','yes','YEs'};
+    Ns={'No','NO','N','n','no'};
+        display('Change format? [Y/N (default)]: ');
+    changeFormat=input('','s');
+    
+    if sum(cellfun(@(s) ~isempty(strfind(changeFormat,s)),Ys))
+        options=[1:length(caminfo2.DeviceInfo.SupportedFormats)]';
+        [num2cell(options),caminfo2.DeviceInfo.SupportedFormats']
+        display('Select Format [#]: ')
+        newFormat=input('');
+        if  newFormat<=length(options)
+            cameraFormat=caminfo2.DeviceInfo.SupportedFormats{newFormat};
+        end
+    end
+    save('camerainfo.mat','adapterName','cameraFormat','deviceID');
+catch
+    clc
+    display('No Camera Detected!')
+
+end
+shg
+
+
+
+
