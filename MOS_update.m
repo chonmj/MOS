@@ -23,8 +23,8 @@ rectangle = getappdata(hImage,'HandleToImrect');
 handles = getappdata(hImage,'HandleToAxes');
 
 %updating time checks
-newTime = [time toc];
-setappdata(hImage,'PrevTime',newTime);
+time = [time;toc];
+setappdata(hImage,'PrevTime',time);
 set(handles.text_time_display, 'String', num2str(toc));
 
 temp_rect = rectangle{1};
@@ -106,7 +106,7 @@ axes(handles.axes_distance);
 d = [d avg_dist(x,y)];
 setappdata(hImage,'PrevDistance',d);
 %if strcmp(get(handles.uitoggletool_plot_live,'State'), 'on')
-       plot(newTime,d,'r','linewidth',2);
+       plot(time,d,'r','linewidth',2);
        drawnow;  
 %end
 
@@ -123,7 +123,7 @@ for i = 1 : num_boxes
     intensity{i} = [intensity{i} integrated_intensity];  
     color = seven_colors(i);
     %if strcmp(get(handles.uitoggletool_plot_live,'State'), 'on')
-       plot(newTime,intensity{i},color,'linewidth',2);
+       plot(time,intensity{i},color,'linewidth',2);
        drawnow;  
     %end
     if i ~= num_boxes        
@@ -136,8 +136,8 @@ end
 setappdata(hImage,'PrevIntensity',intensity);  
 
 %write to files
-dlmwrite(handles.datafile, [newTime(end),d(end)],'-append','delimiter',' ','roffset',1);
-dlmwrite(handles.datacsv, [newTime(end),d(end), intensity{1}(end), intensity{2}(end)],'-append','delimiter',',');
+dlmwrite(handles.datafile, [time(end),d(end)],'-append','delimiter',' ','roffset',1,'precision','%.2f');
+dlmwrite(handles.datacsv, [time(end),d(end), intensity{1}(end), intensity{2}(end)],'-append','delimiter',',','precision','%.2f');
     for i = 1 : num_boxes
         temp_intensity = intensity{i};
         if (posBounds(i) == 0) 

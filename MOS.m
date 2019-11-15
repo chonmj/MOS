@@ -320,7 +320,9 @@ function menu_start_Callback(hObject, eventdata, handles)
         return;
     end
     
-    prompt = {'Run Time (in seconds):','Delay Time (in seconds):','Subfolder:'};
+    prompt = {  'Run Time (in seconds):',...
+                'Delay Time (in seconds):',...
+                'Subfolder:'};
     dlg_title = 'Input';
     num_lines = 1;
     defaultans = {'','',update_filename(handles.save_filename)};
@@ -398,7 +400,7 @@ set(handles.menu_stop,'Enable','on');
     end
       guidata(hObject,handles);
       
-    tic;
+    tic;    % start timer
     setappdata(hImage,'HandleToImrect',handles.rectangle);
     setappdata(hImage,'UpdatePreviewWindowFcn',@MOS_update);
     setappdata(hImage,'PrevDistance',d);
