@@ -119,8 +119,13 @@ frame = masked;
 for i = 1 : num_boxes
     pos = round(rectangle{i}.Position);
     area = frame(pos(2):pos(2)+pos(4), pos(1):pos(1)+pos(3)); 
-    integrated_intensity = sum(sum(area));
-    intensity{i} = [intensity{i} integrated_intensity];  
+%     integrated_intensity = sum(sum(area));
+
+% changed integrated intensity to maximum pixel intensity to avoid
+% saturation. edited by mchon (03-03-2020).
+max_intensity = double(frame(round(y(i)),round(x(i))))/255*100;
+
+    intensity{i} = [intensity{i} max_intensity];  
     color = seven_colors(i);
     %if strcmp(get(handles.uitoggletool_plot_live,'State'), 'on')
        plot(time,intensity{i},color,'linewidth',2);

@@ -22,7 +22,7 @@ function varargout = MOS(varargin)
 
 % Edit the above text to modify the response to help MOS
 
-% Last Modified by GUIDE v2.5 05-Jun-2019 16:46:44
+% Last Modified by GUIDE v2.5 04-Mar-2020 17:53:23
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -547,4 +547,33 @@ shg
 
 
 
+% --- Executes on slider movement.
+function cam_exp_Callback(hObject, eventdata, handles)
+% hObject    handle to cam_exp (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'Value') returns position of slider
+%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+    scale = get(handles.cam_exp,'Value');
+    load('mos_session_data.mat');
+        old_gain=save_gain;
+        old_shutter=save_shutter;
+%     handles.camera_src.Gain=old_gain*scale;
+    handles.camera_src.Shutter=old_shutter*scale;
+%     newGain=handles.camera_src.Gain;
+    newExp=handles.camera_src.Shutter;
+%     handles.camera_src.Shutter = newExp*handles.camera_shutter_range + handles.camera_shutter_min; 
+
+
+% --- Executes during object creation, after setting all properties.
+function cam_exp_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to cam_exp (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: slider controls usually have a light gray background.
+if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor',[.9 .9 .9]);
+end
 
