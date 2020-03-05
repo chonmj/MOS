@@ -22,7 +22,7 @@ function varargout = MOS(varargin)
 
 % Edit the above text to modify the response to help MOS
 
-% Last Modified by GUIDE v2.5 04-Mar-2020 17:53:23
+% Last Modified by GUIDE v2.5 05-Mar-2020 12:57:37
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -278,7 +278,7 @@ function menu_boxes_Callback(hObject, eventdata, handles)
     ycoord = zeros(handles.num_boxes);
     
     %default box size
-    initial_box_size = 100;
+    initial_box_size = 150;
     half_size = initial_box_size/2;
     set(handles.slider_box_size, 'value', initial_box_size/handles.max_box_size);
     fcn1 = makeConstrainToRectFcn('imrect',[1,handles.max_x],[1,handles.max_y]);
@@ -548,6 +548,7 @@ shg
 
 
 % --- Executes on slider movement.
+% Adjusts saved camera exposure by a scalar from 0.1 to 2. Default value is 1.
 function cam_exp_Callback(hObject, eventdata, handles)
 % hObject    handle to cam_exp (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -555,15 +556,10 @@ function cam_exp_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
-    scale = get(handles.cam_exp,'Value');
+    escale = get(handles.cam_exp,'Value');
     load('mos_session_data.mat');
-        old_gain=save_gain;
         old_shutter=save_shutter;
-%     handles.camera_src.Gain=old_gain*scale;
-    handles.camera_src.Shutter=old_shutter*scale;
-%     newGain=handles.camera_src.Gain;
-    newExp=handles.camera_src.Shutter;
-%     handles.camera_src.Shutter = newExp*handles.camera_shutter_range + handles.camera_shutter_min; 
+    handles.camera_src.Shutter=old_shutter*escale;
 
 
 % --- Executes during object creation, after setting all properties.
@@ -577,3 +573,28 @@ if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColo
     set(hObject,'BackgroundColor',[.9 .9 .9]);
 end
 
+
+% --- Executes on slider movement.
+% Adjusts saved camera gain by a scalar from 0.1 to 2. Default value is 1.
+function cam_gain_Callback(hObject, eventdata, handles)
+% hObject    handle to cam_gain (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'Value') returns position of slider
+%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+    gscale = get(handles.cam_gain,'Value');
+    load('mos_session_data.mat');
+        old_gain=save_gain;
+    handles.camera_src.Gain=old_gain*gscale;
+
+% --- Executes during object creation, after setting all properties.
+function cam_gain_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to cam_gain (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: slider controls usually have a light gray background.
+if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor',[.9 .9 .9]);
+end
